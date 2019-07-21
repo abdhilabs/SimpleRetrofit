@@ -1,14 +1,15 @@
 package com.abdhilabs.simpleretrofit;
 
-import android.content.Intent;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
-import com.abdhilabs.simpleretrofit.adapter.MovieAdapter;
+import com.abdhilabs.simpleretrofit.adapter.SearchMovieAdapter;
 import com.abdhilabs.simpleretrofit.api.ClientService;
 import com.abdhilabs.simpleretrofit.model.ItemResponseMovie;
 import com.abdhilabs.simpleretrofit.model.ModelResponseMovie;
@@ -22,49 +23,59 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
-    private List<ItemResponseMovie> itemResponseMovieList = new ArrayList<>();
+public class SearchActivity extends AppCompatActivity {
+    private List<ItemResponseMovie> listSearch = new ArrayList<>();
     private RecyclerView recyclerView;
+    private EditText etSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_search);
 
-        recyclerView = findViewById(R.id.rvMovies);
+        recyclerView = findViewById(R.id.rvSearchMovie);
+        etSearch = findViewById(R.id.etSearch);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
+    }
 
-        //Membuat Objek Retrofit
+    public void search(View view) {
+        String search = etSearch.getText().toString().toUpperCase();
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Sek sabar...");
+        progressDialog.show();
+
+        //Buat Retrofit
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.themoviedb.org/3/discover/")
+                .baseUrl("https://api.themoviedb.org/3/search/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        //Mencetak pelayanan atau service
+        //Buat Service
         ClientService service = retrofit.create(ClientService.class);
 
-        //Membuat objek request
-        Call<ModelResponseMovie> request = service.getDataMovie();
+        //Pilih jenis Service
+        Call<ModelResponseMovie> request = service.getSearchMovie(search);
 
-        //Mengirimkan request instansi
+        //Kirim Request
         request.enqueue(new Callback<ModelResponseMovie>() {
             @Override
             public void onResponse(Call<ModelResponseMovie> call, Response<ModelResponseMovie> response) {
-                itemResponseMovieList = response.body().getListMovie();
-                MovieAdapter adapter = new MovieAdapter(itemResponseMovieList, MainActivity.this);
+                progressDialog.dismiss();
+                if (response.body() != null) {
+                    listSearch = response.body().getListMovie();
+                }
+                SearchMovieAdapter adapter = new SearchMovieAdapter(SearchActivity.this, listSearch);
                 recyclerView.setAdapter(adapter);
             }
 
             @Override
             public void onFailure(Call<ModelResponseMovie> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Hiyah we gak iso :v", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+                Toast.makeText(SearchActivity.this, "Hiyah we gak iso :v", Toast.LENGTH_SHORT).show();
+
             }
         });
-    }
-
-    public void pindah(View view) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
     }
 }

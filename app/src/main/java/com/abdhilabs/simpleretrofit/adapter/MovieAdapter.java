@@ -9,16 +9,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.abdhilabs.simpleretrofit.R;
-import com.abdhilabs.simpleretrofit.model.Movie;
+import com.abdhilabs.simpleretrofit.model.ItemResponseMovie;
 
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
-    private List<Movie> movieList;
+    private List<ItemResponseMovie> itemResponseMovieList;
     private Context context;
 
-    public MovieAdapter(List<Movie> movieList, Context context) {
-        this.movieList = movieList;
+    public MovieAdapter(List<ItemResponseMovie> itemResponseMovieList, Context context) {
+        this.itemResponseMovieList = itemResponseMovieList;
         this.context = context;
     }
 
@@ -31,13 +31,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int i) {
-        holder.tvTitle.setText(movieList.get(i).getTitle());
-        holder.tvReleased.setText(movieList.get(i).getReleaseDate());
+        holder.tvTitle.setText(itemResponseMovieList.get(i).getTitle());
+        holder.tvReleased.setText(itemResponseMovieList.get(i).getReleaseDate());
     }
 
     @Override
     public int getItemCount() {
-        return movieList.size();
+        return itemResponseMovieList.size();
     }
 
     class MovieViewHolder extends RecyclerView.ViewHolder {

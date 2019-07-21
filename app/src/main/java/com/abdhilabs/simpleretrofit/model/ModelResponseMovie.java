@@ -4,11 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class MovieArray {
+public class ModelResponseMovie {
     @SerializedName("results")
-    private List<Movie> list;
+    private List<ItemResponseMovie> list;
 
-    public List<Movie> getListMovie() {
+    public List<ItemResponseMovie> getListMovie() {
         return list;
     }
 }
